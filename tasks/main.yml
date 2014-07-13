@@ -1,0 +1,5 @@
+---
+- include: setup.yml
+- include: ruby-build.yml
+- include: rbenv.yml
+- include: gemrc.yml

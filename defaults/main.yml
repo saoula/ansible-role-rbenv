@@ -1,0 +1,4 @@
+---
+deploy_user: "{{ ansible_ssh_user }}"
+rbenv_root: "/home/{{ deploy_user }}/.rbenv"
+ruby_version: 2.1.2
