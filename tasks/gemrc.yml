@@ -1,3 +1,8 @@
 ---
 - name: set gemrc
-  copy: src=gemrc dest=/home/{{ deploy_user }}/.gemrc owner={{ deploy_user }} group={{ deploy_user }} mode=0644
+  copy:
+    src: gemrc
+    dest: "/home/{{ deploy_user }}/.gemrc"
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    mode: 0644

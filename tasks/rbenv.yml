@@ -1,19 +1,32 @@
 ---
-- name: update rbenv repo
-  git: repo=git://github.com/sstephenson/rbenv.git dest={{ rbenv_root }} version=v0.4.0 update=no
+- name: clone rbenv repo
+  git:
+    repo: https://github.com/sstephenson/rbenv.git
+    dest: "{{ rbenv_root }}"
+    version: v0.4.0
+    update: no
 
 - name: add rbenv to path
   sudo: true
-  file: path=/usr/local/bin/rbenv src={{ rbenv_root }}/bin/rbenv state=link
+  file:
+    path: /usr/local/bin/rbenv
+    src: "{{ rbenv_root }}/bin/rbenv"
+    state: link
 
 - name: add rbenv initialization to profile
   sudo: true
-  template: src=rbenv.sh.j2 dest=/etc/profile.d/rbenv.sh owner=root group=root mode=0755
+  template:
+    src: rbenv.sh.j2
+    dest: /etc/profile.d/rbenv.sh
+    owner: root
+    group: root
+    mode: 0755
 
 - name: check ruby installed
   shell: RBENV_ROOT={{ rbenv_root }} rbenv versions | grep {{ ruby_version }}
   register: ruby_installed
   ignore_errors: yes
+  changed_when: false
 
 - name: install ruby
   shell: RBENV_ROOT={{ rbenv_root }} rbenv install {{ ruby_version }}
@@ -26,3 +39,11 @@
 - name: rehash
   shell: RBENV_ROOT={{ rbenv_root }} rbenv rehash
   when: ruby_installed|failed
+
+- name: amend permission for rbenv_root
+  file:
+    path: "{{ rbenv_root }}"
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    state: directory
+    recurse: yes

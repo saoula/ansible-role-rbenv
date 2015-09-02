@@ -3,6 +3,7 @@
   command: test -x /usr/local/bin/ruby-build
   register: rbuild_present
   ignore_errors: yes
+  changed_when: false
 
 - name: create temporary directory
   command: mktemp -d
@@ -10,14 +11,21 @@
   when: rbuild_present|failed
 
 - name: clone ruby-build repo
-  git: repo=git://github.com/sstephenson/ruby-build.git dest={{ tempdir.stdout }}/ruby-build update=no
+  git:
+    repo: https://github.com/sstephenson/ruby-build.git
+    dest: "{{ tempdir.stdout }}/ruby-build"
+    update: no
   when: rbuild_present|failed
 
 - name: install ruby-build
   sudo: true
-  command: ./install.sh chdir={{ tempdir.stdout }}/ruby-build
+  args:
+    chdir: {{ tempdir.stdout }}/ruby-build
+  command: ./install.sh
   when: rbuild_present|failed
 
 - name: remove temporary directory
-  file: path={{ tempdir.stdout }} state=absent
+  file:
+    path: "{{ tempdir.stdout }}"
+    state: absent
   when: rbuild_present|failed
